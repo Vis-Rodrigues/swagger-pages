@@ -1,0 +1,36 @@
+name: Deploy API Docs to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Step 3: Install ReDoc CLI
+      - name: Install ReDoc CLI
+        run: npm install -g redoc-cli
+
+      # Step 4: Generate HTML documentation from OpenAPI spec
+      - name: Generate API documentation
+        run: redoc-cli bundle openapi.yaml -o docs/index.html
+
+      # Step 5: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
